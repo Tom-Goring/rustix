@@ -17,6 +17,7 @@ pub use backend::fs::types::FlockOperation;
     target_os = "aix",
     target_os = "dragonfly",
     target_os = "redox",
+    target_os = "nto",
 )))]
 pub use backend::fs::types::FallocateFlags;
 
@@ -28,6 +29,7 @@ pub use backend::fs::types::Stat;
     target_os = "netbsd",
     target_os = "redox",
     target_os = "wasi",
+    target_os = "nto",
 )))]
 pub use backend::fs::types::StatFs;
 
@@ -164,6 +166,7 @@ pub fn fstat<Fd: AsFd>(fd: Fd) -> io::Result<Stat> {
     target_os = "haiku",
     target_os = "netbsd",
     target_os = "redox",
+    target_os = "nto",
     target_os = "wasi",
 )))]
 #[inline]
@@ -225,6 +228,7 @@ pub fn futimens<Fd: AsFd>(fd: Fd, times: &Timestamps) -> io::Result<()> {
     target_os = "aix",
     target_os = "dragonfly",
     target_os = "redox",
+    target_os = "nto",
 )))] // not implemented in libc for netbsd yet
 #[inline]
 #[doc(alias = "posix_fallocate")]

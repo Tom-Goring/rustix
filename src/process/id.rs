@@ -312,12 +312,12 @@ pub fn setsid() -> io::Result<Pid> {
 // no change to the owner/group ID.
 pub(crate) fn translate_fchown_args(owner: Option<Uid>, group: Option<Gid>) -> (u32, u32) {
     let ow = match owner {
-        Some(o) => o.as_raw(),
+        Some(o) => o.as_raw() as u32,
         None => u32::MAX,
     };
 
     let gr = match group {
-        Some(g) => g.as_raw(),
+        Some(g) => g.as_raw() as u32,
         None => u32::MAX,
     };
 

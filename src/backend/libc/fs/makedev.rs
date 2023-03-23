@@ -10,7 +10,7 @@ use crate::fs::Dev;
 )))]
 #[inline]
 pub(crate) fn makedev(maj: u32, min: u32) -> Dev {
-    c::makedev(maj, min)
+    unsafe { c::makedev(maj, min) }
 }
 
 #[cfg(all(target_os = "android", not(target_pointer_width = "32")))]

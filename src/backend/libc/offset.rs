@@ -150,6 +150,7 @@ pub(super) use c::{pread64 as libc_pread, pwrite64 as libc_pwrite};
     target_os = "linux",
     target_os = "redox",
     target_os = "solaris",
+    target_os = "nto"
 )))]
 pub(super) use c::{preadv as libc_preadv, pwritev as libc_pwritev};
 #[cfg(any(target_os = "linux", target_os = "emscripten"))]
@@ -376,6 +377,7 @@ pub(super) use readwrite_pv64v2::{preadv64v2 as libc_preadv2, pwritev64v2 as lib
     target_os = "linux",
     target_os = "l4re",
     target_os = "redox",
+    target_os = "nto",
 )))]
 #[cfg(feature = "fs")]
 pub(super) use c::posix_fallocate as libc_posix_fallocate;
@@ -390,6 +392,7 @@ pub(super) use c::posix_fallocate64 as libc_posix_fallocate;
     target_os = "netbsd",
     target_os = "redox",
     target_os = "wasi",
+    target_os = "nto",
 )))]
 #[cfg(feature = "fs")]
 pub(super) use {c::fstatfs as libc_fstatfs, c::statfs as libc_statfs};

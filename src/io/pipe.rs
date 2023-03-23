@@ -59,7 +59,7 @@ pub fn pipe() -> io::Result<(OwnedFd, OwnedFd)> {
 ///  - [Linux]
 ///
 /// [Linux]: https://man7.org/linux/man-pages/man2/pipe2.2.html
-#[cfg(not(any(apple, target_os = "aix", target_os = "haiku")))]
+#[cfg(not(any(apple, target_os = "aix", target_os = "haiku", target_os = "nto")))]
 #[inline]
 #[doc(alias = "pipe2")]
 pub fn pipe_with(flags: PipeFlags) -> io::Result<(OwnedFd, OwnedFd)> {

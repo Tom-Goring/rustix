@@ -6,6 +6,7 @@
     target_os = "netbsd",
     target_os = "redox",
     target_os = "wasi",
+    target_os = "nto",
 )))]
 use crate::fs::StatFs;
 #[cfg(not(any(solarish, target_os = "haiku", target_os = "redox", target_os = "wasi")))]
@@ -28,6 +29,7 @@ use {
     target_os = "haiku",
     target_os = "netbsd",
     target_os = "redox",
+    target_os = "nto",
     target_os = "wasi",
 )))]
 #[inline]

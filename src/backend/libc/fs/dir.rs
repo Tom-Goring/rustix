@@ -1,6 +1,6 @@
 use super::super::c;
 use super::super::conv::owned_fd;
-#[cfg(not(any(solarish, target_os = "haiku")))]
+#[cfg(not(any(solarish, target_os = "haiku", target_os = "nto")))]
 use super::types::FileType;
 use crate::fd::{AsFd, BorrowedFd};
 use crate::ffi::CStr;
@@ -13,6 +13,7 @@ use crate::fs::{fcntl_getfl, fstat, openat, Mode, OFlags, Stat};
     target_os = "netbsd",
     target_os = "redox",
     target_os = "wasi",
+    target_os = "nto",
 )))]
 use crate::fs::{fstatfs, StatFs};
 #[cfg(not(any(solarish, target_os = "haiku", target_os = "redox", target_os = "wasi")))]
@@ -121,6 +122,7 @@ impl Dir {
         target_os = "netbsd",
         target_os = "redox",
         target_os = "wasi",
+        target_os = "nto",
     )))]
     #[inline]
     pub fn statfs(&self) -> io::Result<StatFs> {
@@ -146,7 +148,7 @@ impl Dir {
 // struct, as the name is NUL-terminated and memory may not be allocated for
 // the full extent of the struct. Copy the fields one at a time.
 unsafe fn read_dirent(input: &libc_dirent) -> libc_dirent {
-    #[cfg(not(any(solarish, target_os = "aix", target_os = "haiku")))]
+    #[cfg(not(any(solarish, target_os = "aix", target_os = "haiku", target_os = "nto")))]
     let d_type = input.d_type;
 
     #[cfg(not(any(
@@ -156,10 +158,14 @@ unsafe fn read_dirent(input: &libc_dirent) -> libc_dirent {
         target_os = "haiku",
         target_os = "netbsd",
         target_os = "wasi",
+        target_os = "nto",
     )))]
     let d_off = input.d_off;
 
     #[cfg(target_os = "aix")]
+    let d_offset = input.d_offset;
+    
+    #[cfg(target_os = "nto")]
     let d_offset = input.d_offset;
 
     #[cfg(not(any(freebsdlike, netbsdlike)))]
@@ -173,6 +179,9 @@ unsafe fn read_dirent(input: &libc_dirent) -> libc_dirent {
 
     #[cfg(bsd)]
     let d_namlen = input.d_namlen;
+
+    #[cfg(target_os = "nto")]
+    let d_namelen = input.d_namelen;
 
     #[cfg(apple)]
     let d_seekoff = input.d_seekoff;
@@ -190,18 +199,21 @@ unsafe fn read_dirent(input: &libc_dirent) -> libc_dirent {
     #[cfg_attr(target_os = "wasi", allow(unused_mut))]
     #[cfg(not(freebsdlike))]
     let mut dirent = libc_dirent {
-        #[cfg(not(any(solarish, target_os = "aix", target_os = "haiku")))]
+        #[cfg(not(any(solarish, target_os = "aix", target_os = "haiku", target_os = "nto")))]
         d_type,
         #[cfg(not(any(
             apple,
             target_os = "aix",
             target_os = "freebsd",  // Until FreeBSD 12
             target_os = "haiku",
+            target_os = "nto",
             target_os = "netbsd",
             target_os = "wasi",
         )))]
         d_off,
         #[cfg(target_os = "aix")]
+        d_offset,
+        #[cfg(target_os = "nto")]
         d_offset,
         #[cfg(not(any(netbsdlike, target_os = "freebsd")))]
         d_ino,
@@ -211,6 +223,8 @@ unsafe fn read_dirent(input: &libc_dirent) -> libc_dirent {
         d_reclen,
         #[cfg(any(apple, netbsdlike, target_os = "aix", target_os = "freebsd"))]
         d_namlen,
+        #[cfg(target_os = "nto")]
+        d_namelen,
         #[cfg(apple)]
         d_seekoff,
         // The `d_name` field is NUL-terminated, and we need to be careful not
@@ -319,7 +333,7 @@ impl DirEntry {
     }
 
     /// Returns the type of this directory entry.
-    #[cfg(not(any(solarish, target_os = "aix", target_os = "haiku")))]
+    #[cfg(not(any(solarish, target_os = "aix", target_os = "haiku", target_os = "nto")))]
     #[inline]
     pub fn file_type(&self) -> FileType {
         FileType::from_dirent_d_type(self.dirent.d_type)

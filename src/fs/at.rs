@@ -11,7 +11,7 @@ use crate::ffi::{CStr, CString};
 use crate::fs::Access;
 #[cfg(apple)]
 use crate::fs::CloneFlags;
-#[cfg(not(any(apple, target_os = "wasi")))]
+#[cfg(not(any(apple, target_os = "wasi", target_os = "nto")))]
 use crate::fs::FileType;
 #[cfg(any(target_os = "android", target_os = "linux"))]
 use crate::fs::RenameFlags;
@@ -349,7 +349,7 @@ pub fn fclonefileat<Fd: AsFd, DstFd: AsFd, P: path::Arg>(
 ///
 /// [POSIX]: https://pubs.opengroup.org/onlinepubs/9699919799/functions/mknodat.html
 /// [Linux]: https://man7.org/linux/man-pages/man2/mknodat.2.html
-#[cfg(not(any(apple, target_os = "wasi")))]
+#[cfg(not(any(apple, target_os = "wasi", target_os = "nto")))]
 #[inline]
 pub fn mknodat<P: path::Arg, Fd: AsFd>(
     dirfd: Fd,

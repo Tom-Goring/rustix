@@ -7,7 +7,7 @@ use super::super::conv::{
     borrowed_fd, ret, ret_c_int, ret_discarded_fd, ret_owned_fd, ret_ssize_t,
 };
 use super::super::offset::{libc_pread, libc_pwrite};
-#[cfg(not(any(target_os = "haiku", target_os = "redox", target_os = "solaris")))]
+#[cfg(not(any(target_os = "haiku", target_os = "redox", target_os = "solaris", target_os = "nto")))]
 use super::super::offset::{libc_preadv, libc_pwritev};
 #[cfg(all(target_os = "linux", target_env = "gnu"))]
 use super::super::offset::{libc_preadv2, libc_pwritev2};
@@ -16,9 +16,9 @@ use crate::fd::{AsFd, BorrowedFd, OwnedFd, RawFd};
 use crate::io::kqueue::Event;
 #[cfg(solarish)]
 use crate::io::port::Event;
-#[cfg(not(any(target_os = "aix", target_os = "wasi")))]
+#[cfg(not(any(target_os = "aix", target_os = "wasi", target_os = "nto")))]
 use crate::io::DupFlags;
-#[cfg(not(any(apple, target_os = "aix", target_os = "haiku", target_os = "wasi")))]
+#[cfg(not(any(apple, target_os = "aix", target_os = "haiku", target_os = "wasi", target_os = "nto")))]
 use crate::io::PipeFlags;
 use crate::io::{self, FdFlags, IoSlice, IoSliceMut, PollFd};
 #[cfg(any(target_os = "android", target_os = "linux"))]
@@ -109,7 +109,7 @@ pub(crate) fn writev(fd: BorrowedFd<'_>, bufs: &[IoSlice]) -> io::Result<usize> 
     Ok(nwritten as usize)
 }
 
-#[cfg(not(any(target_os = "haiku", target_os = "redox", target_os = "solaris")))]
+#[cfg(not(any(target_os = "haiku", target_os = "redox", target_os = "solaris", target_os = "nto")))]
 pub(crate) fn preadv(
     fd: BorrowedFd<'_>,
     bufs: &mut [IoSliceMut],
@@ -128,7 +128,7 @@ pub(crate) fn preadv(
     Ok(nread as usize)
 }
 
-#[cfg(not(any(target_os = "haiku", target_os = "redox", target_os = "solaris")))]
+#[cfg(not(any(target_os = "haiku", target_os = "redox", target_os = "solaris", target_os = "nto")))]
 pub(crate) fn pwritev(fd: BorrowedFd<'_>, bufs: &[IoSlice], offset: u64) -> io::Result<usize> {
     // Silently cast; we'll get `EINVAL` if the value is negative.
     let offset = offset as i64;
@@ -420,6 +420,7 @@ pub(crate) fn dup2(fd: BorrowedFd<'_>, new: &mut OwnedFd) -> io::Result<()> {
     target_os = "haiku",
     target_os = "redox",
     target_os = "wasi",
+    target_os = "nto",
 )))]
 pub(crate) fn dup3(fd: BorrowedFd<'_>, new: &mut OwnedFd, flags: DupFlags) -> io::Result<()> {
     unsafe {
@@ -499,7 +500,7 @@ pub(crate) fn pipe() -> io::Result<(OwnedFd, OwnedFd)> {
     }
 }
 
-#[cfg(not(any(apple, target_os = "aix", target_os = "haiku", target_os = "wasi")))]
+#[cfg(not(any(apple, target_os = "aix", target_os = "haiku", target_os = "wasi", target_os = "nto")))]
 pub(crate) fn pipe_with(flags: PipeFlags) -> io::Result<(OwnedFd, OwnedFd)> {
     unsafe {
         let mut result = MaybeUninit::<[OwnedFd; 2]>::uninit();

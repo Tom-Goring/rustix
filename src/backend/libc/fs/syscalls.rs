@@ -27,6 +27,7 @@ use super::super::offset::libc_posix_fadvise;
     target_os = "fuchsia",
     target_os = "linux",
     target_os = "redox",
+    target_os = "nto",
 )))]
 use super::super::offset::libc_posix_fallocate;
 use super::super::offset::{libc_fstat, libc_fstatat, libc_ftruncate, libc_lseek, libc_off_t};
@@ -36,6 +37,7 @@ use super::super::offset::{libc_fstat, libc_fstatat, libc_ftruncate, libc_lseek,
     target_os = "netbsd",
     target_os = "redox",
     target_os = "wasi",
+    target_os = "nto",
 )))]
 use super::super::offset::{libc_fstatfs, libc_statfs};
 #[cfg(not(any(solarish, target_os = "haiku", target_os = "redox", target_os = "wasi")))]
@@ -66,6 +68,7 @@ use crate::fs::Advice;
     target_os = "aix",
     target_os = "dragonfly",
     target_os = "redox",
+    target_os = "nto",
 )))]
 use crate::fs::FallocateFlags;
 #[cfg(not(target_os = "wasi"))]
@@ -85,11 +88,12 @@ use crate::fs::SealFlags;
     target_os = "netbsd",
     target_os = "redox",
     target_os = "wasi",
+    target_os = "nto",
 )))]
 use crate::fs::StatFs;
 #[cfg(any(target_os = "android", target_os = "linux"))]
 use crate::fs::{cwd, RenameFlags, ResolveFlags, Statx, StatxFlags};
-#[cfg(not(any(apple, target_os = "redox", target_os = "wasi")))]
+#[cfg(not(any(apple, target_os = "redox", target_os = "wasi", target_os = "nto")))]
 use crate::fs::{Dev, FileType};
 use crate::fs::{Mode, OFlags, Stat, Timestamps};
 #[cfg(not(any(solarish, target_os = "haiku", target_os = "redox", target_os = "wasi")))]
@@ -186,6 +190,7 @@ pub(crate) fn openat(
     target_os = "netbsd",
     target_os = "redox",
     target_os = "wasi",
+    target_os = "nto",
 )))]
 #[inline]
 pub(crate) fn statfs(filename: &CStr) -> io::Result<StatFs> {
@@ -215,7 +220,7 @@ pub(crate) fn readlinkat(dirfd: BorrowedFd<'_>, path: &CStr, buf: &mut [u8]) -> 
             c_str(path),
             buf.as_mut_ptr().cast::<c::c_char>(),
             buf.len(),
-        ))
+        ).try_into().unwrap())
         .map(|nread| nread as usize)
     }
 }
@@ -690,14 +695,14 @@ pub(crate) fn chownat(
         ret(c::fchownat(
             borrowed_fd(dirfd),
             c_str(path),
-            ow,
-            gr,
+            ow.try_into().unwrap(),
+            gr.try_into().unwrap(),
             flags.bits(),
         ))
     }
 }
 
-#[cfg(not(any(apple, target_os = "redox", target_os = "wasi")))]
+#[cfg(not(any(apple, target_os = "redox", target_os = "wasi", target_os = "nto")))]
 pub(crate) fn mknodat(
     dirfd: BorrowedFd<'_>,
     path: &CStr,
@@ -922,7 +927,7 @@ pub(crate) fn fchown(fd: BorrowedFd<'_>, owner: Option<Uid>, group: Option<Gid>)
 pub(crate) fn fchown(fd: BorrowedFd<'_>, owner: Option<Uid>, group: Option<Gid>) -> io::Result<()> {
     unsafe {
         let (ow, gr) = crate::process::translate_fchown_args(owner, group);
-        ret(c::fchown(borrowed_fd(fd), ow, gr))
+        ret(c::fchown(borrowed_fd(fd), ow.try_into().unwrap(), gr.try_into().unwrap()))
     }
 }
 
@@ -977,6 +982,7 @@ fn fstat_old(fd: BorrowedFd<'_>) -> io::Result<Stat> {
     target_os = "netbsd",
     target_os = "redox",
     target_os = "wasi",
+    target_os = "nto",
 )))]
 pub(crate) fn fstatfs(fd: BorrowedFd<'_>) -> io::Result<StatFs> {
     let mut statfs = MaybeUninit::<StatFs>::uninit();
@@ -1119,6 +1125,7 @@ unsafe fn futimens_old(fd: BorrowedFd<'_>, times: &Timestamps) -> io::Result<()>
     target_os = "aix",
     target_os = "dragonfly",
     target_os = "redox",
+    target_os = "nto",
 )))]
 pub(crate) fn fallocate(
     fd: BorrowedFd<'_>,

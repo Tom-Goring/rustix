@@ -57,10 +57,10 @@ pub enum Resource {
     #[cfg(not(target_os = "haiku"))]
     Core = c::RLIMIT_CORE as c::c_int,
     /// `RLIMIT_RSS`
-    #[cfg(not(any(apple, solarish, target_os = "haiku")))]
+    #[cfg(not(any(apple, solarish, target_os = "haiku", target_os = "nto")))]
     Rss = c::RLIMIT_RSS as c::c_int,
     /// `RLIMIT_NPROC`
-    #[cfg(not(any(solarish, target_os = "haiku")))]
+    #[cfg(not(any(solarish, target_os = "haiku", target_os = "nto")))]
     Nproc = c::RLIMIT_NPROC as c::c_int,
     /// `RLIMIT_NOFILE`
     Nofile = c::RLIMIT_NOFILE as c::c_int,
@@ -71,19 +71,19 @@ pub enum Resource {
     #[cfg(not(target_os = "openbsd"))]
     As = c::RLIMIT_AS as c::c_int,
     /// `RLIMIT_LOCKS`
-    #[cfg(not(any(bsd, solarish, target_os = "aix", target_os = "haiku")))]
+    #[cfg(not(any(bsd, solarish, target_os = "aix", target_os = "haiku", target_os = "nto")))]
     Locks = c::RLIMIT_LOCKS as c::c_int,
     /// `RLIMIT_SIGPENDING`
-    #[cfg(not(any(bsd, solarish, target_os = "aix", target_os = "haiku")))]
+    #[cfg(not(any(bsd, solarish, target_os = "aix", target_os = "haiku", target_os = "nto")))]
     Sigpending = c::RLIMIT_SIGPENDING as c::c_int,
     /// `RLIMIT_MSGQUEUE`
-    #[cfg(not(any(bsd, solarish, target_os = "aix", target_os = "haiku")))]
+    #[cfg(not(any(bsd, solarish, target_os = "aix", target_os = "haiku", target_os = "nto")))]
     Msgqueue = c::RLIMIT_MSGQUEUE as c::c_int,
     /// `RLIMIT_NICE`
-    #[cfg(not(any(bsd, solarish, target_os = "aix", target_os = "haiku")))]
+    #[cfg(not(any(bsd, solarish, target_os = "aix", target_os = "haiku", target_os = "nto")))]
     Nice = c::RLIMIT_NICE as c::c_int,
     /// `RLIMIT_RTPRIO`
-    #[cfg(not(any(bsd, solarish, target_os = "aix", target_os = "haiku")))]
+    #[cfg(not(any(bsd, solarish, target_os = "aix", target_os = "haiku", target_os = "nto")))]
     Rtprio = c::RLIMIT_RTPRIO as c::c_int,
     /// `RLIMIT_RTTIME`
     #[cfg(not(any(
@@ -93,6 +93,7 @@ pub enum Resource {
         target_os = "android",
         target_os = "emscripten",
         target_os = "haiku",
+        target_os = "nto",
     )))]
     Rttime = c::RLIMIT_RTTIME as c::c_int,
 }
@@ -153,6 +154,7 @@ pub enum Signal {
         solarish,
         target_os = "aix",
         target_os = "haiku",
+        target_os = "nto",
         all(
             any(target_os = "android", target_os = "linux"),
             any(
@@ -228,6 +230,7 @@ impl Signal {
                 solarish,
                 target_os = "aix",
                 target_os = "haiku",
+                target_os = "nto",
                 all(
                     any(target_os = "android", target_os = "linux"),
                     any(
